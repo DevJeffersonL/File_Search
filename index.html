@@ -45,39 +45,46 @@
         <ul id="file-list"></ul>
     </div>
     <script>
-        function searchFiles() {
-            var input, filter, ul, li, a, i, txtValue;
-            input = document.getElementById('file-search');
-            filter = input.value.toUpperCase();
-            ul = document.getElementById('file-list');
-            li = ul.getElementsByTagName('li');
+    function searchFiles() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById('file-search');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById('file-list');
+        li = ul.getElementsByTagName('li');
 
-            for (i = 0; i < li.length; i++) {
-                a = li[i].getElementsByTagName('a')[0];
-                txtValue = a.textContent || a.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = '';
-                } else {
-                    li[i].style.display = 'none';
-                }
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName('a')[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = '';
+            } else {
+                li[i].style.display = 'none';
             }
         }
+    }
 
-        // Fetch file list from the server (PHP in this case)
-        fetch('get_files.php')
-            .then(response => response.json())
-            .then(files => {
-                var fileList = document.getElementById('file-list');
-                files.forEach(function(file) {
-                    var listItem = document.createElement('li');
-                    var link = document.createElement('a');
-                    link.href = file;
-                    link.textContent = file;
-                    listItem.appendChild(link);
-                    fileList.appendChild(listItem);
-                });
-            })
-            .catch(error => console.error('Error fetching file list:', error));
-    </script>
+    // Fetch file list from the server (PHP in this case)
+    fetch('get_files.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(files => {
+            var fileList = document.getElementById('file-list');
+            fileList.innerHTML = ''; // Clear existing list
+            files.forEach(function(file) {
+                var listItem = document.createElement('li');
+                var link = document.createElement('a');
+                link.href = file;
+                link.textContent = file;
+                listItem.appendChild(link);
+                fileList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching file list:', error));
+</script>
+
 </body>
 </html>
